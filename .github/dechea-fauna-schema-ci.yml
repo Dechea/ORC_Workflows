@@ -1,0 +1,48 @@
+name: Dechea Fauna Schema CI
+
+on:
+  workflow_call:
+    inputs:
+      GITHUB_REPOSITORIES:
+        required: true
+        type: string
+      FAUNA_DATABASE:
+        required: true
+        type: string
+    secrets:
+      GITHUB_PAT:
+        required: true
+      FAUNA_URL:
+        required: true
+      FAUNA_TOKEN:
+        required: true
+      SONAR_TOKEN_SCHEMA:
+        required: true
+      GITHUB_TOKEN:
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fauna Domain IaC
+        uses: Dechea/Fauna-Domain-IaC_-Action-@main
+        with:
+          GITHUB_REPOSITORIES: ${{ inputs.GITHUB_REPOSITORIES}}
+          GITHUB_PAT: ${{ secrets.SCHEMA_PAT_GITHUB }}
+          FAUNA_DATABASE: ${{ inputs.FAUNA_DATABASE}}
+          FAUNA_DOMAIN: ${{ secrets.FAUNA_URL }}
+          FAUNA_SECRET: ${{ secrets.FAUNA_TOKEN }}
+
+      - uses: actions/download-artifact@v3
+        name: Get coverage report artifact
+        with:
+          name: coverage-files
+          path: coverage
+
+      - uses: sonarsource/sonarcloud-github-action@master
+        name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCHEMA }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
