@@ -9,17 +9,7 @@ on:
       FAUNA_DATABASE:
         required: true
         type: string
-    secrets:
-      GITHUB_PAT:
-        required: true
-      FAUNA_URL:
-        required: true
-      FAUNA_TOKEN:
-        required: true
-      SONAR_TOKEN_SCHEMA:
-        required: true
-      GITHUB_TOKEN:
-        required: true
+        
 jobs:
   build:
     runs-on: ubuntu-latest
