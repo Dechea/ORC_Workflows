@@ -22,7 +22,7 @@ jobs:
           GITHUB_REPOSITORIES: ${{ inputs.GITHUB_REPOSITORIES}}
           GITHUB_PAT: ${{ secrets.SCHEMA_PAT_GITHUB }}
           FAUNA_DATABASE: ${{ inputs.FAUNA_DATABASE}}
-          FAUNA_DOMAIN: ${{ secrets.FAUNA_URL }}
+          FAUNA_REGION: ${{ secrets.FAUNA_REGION }}
           FAUNA_SECRET: ${{ secrets.FAUNA_TOKEN }}
 
       - uses: actions/download-artifact@v3
