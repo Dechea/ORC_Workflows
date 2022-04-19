@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Fauna Domain IaC
-        uses: Dechea/Fauna-Domain-IaC_-Action-@feature/test-if-condition
+        uses: Dechea/Fauna-Domain-IaC_-Action-@main
         with:
           GITHUB_REPOSITORIES: ${{ inputs.GITHUB_REPOSITORIES}}
           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
