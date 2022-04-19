@@ -39,12 +39,12 @@ jobs:
           FAUNA_REGION: ${{ secrets.FAUNA_REGION }}
           FAUNA_TOKEN: ${{ secrets.FAUNA_TOKEN }}
           MUTATION_TEST: ${{ inputs.MUTATION_TEST }}
-#
-#      - uses: actions/download-artifact@v3
-#        name: Get coverage report artifact
-#        with:
-#          name: coverage-files
-#          path: coverage
+
+      - uses: actions/download-artifact@v3
+        name: Get coverage report artifact
+        with:
+          name: coverage-files
+          path: coverage
 
       - uses: sonarsource/sonarcloud-github-action@master
         name: SonarCloud Scan
