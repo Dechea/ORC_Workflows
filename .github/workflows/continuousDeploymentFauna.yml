@@ -9,7 +9,21 @@ on:
       FAUNA_DATABASE:
         required: true
         type: string
-        
+      MUTATION_TEST:
+        required: false
+        type: boolean
+    secrets:
+      GITHUB_PAT:
+        required: true
+      GITHUB_TOKEN:
+        required: true
+      FAUNA_REGION:
+        required: true
+      FAUNA_TOKEN:
+        required: true
+      SONAR_TOKEN_SCHEMA:
+        required: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,10 +34,11 @@ jobs:
         uses: Dechea/Fauna-Domain-IaC_-Action-@main
         with:
           GITHUB_REPOSITORIES: ${{ inputs.GITHUB_REPOSITORIES}}
-          GITHUB_PAT: ${{ secrets.SCHEMA_PAT_GITHUB }}
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
           FAUNA_DATABASE: ${{ inputs.FAUNA_DATABASE}}
           FAUNA_REGION: ${{ secrets.FAUNA_REGION }}
-          FAUNA_SECRET: ${{ secrets.FAUNA_TOKEN }}
+          FAUNA_TOKEN: ${{ secrets.FAUNA_TOKEN }}
+          MUTATION_TEST: ${{ inputs.MUTATION_TEST }}
 
       - uses: actions/download-artifact@v3
         name: Get coverage report artifact
