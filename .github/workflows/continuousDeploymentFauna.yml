@@ -15,8 +15,8 @@ on:
     secrets:
       GITHUB_PAT:
         required: true
-      GITHUB_TOKEN:
-        required: true
+#      GITHUB_TOKEN:
+#        required: true
       FAUNA_REGION:
         required: true
       FAUNA_TOKEN:
@@ -50,4 +50,4 @@ jobs:
         name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCHEMA }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
