@@ -15,8 +15,6 @@ on:
     secrets:
       GITHUB_PAT:
         required: true
-#      GITHUB_TOKEN:
-#        required: true
       FAUNA_REGION:
         required: true
       FAUNA_TOKEN:
