@@ -33,13 +33,12 @@ jobs:
         shell: bash
 
       - uses: actions/checkout@v3
-      
+
       - name: Get All Repo Names
         run: |
-          ls -lrt ${{ github.workspace }}
           chmod u+x ${{ github.workspace }}/scripts/get_all_domains.sh
-          # echo "${{ github.ref_name }}"
-          # echo "${{ github.repository }}"
+          GITHUB_REPOSITORIES=$( ${{ github.workspace }}/scripts/get_all_domains.sh ${{ github.token }} ${{ github.repository }} ${{ github.ref_name }} )
+          echo $GITHUB_REPOSITORIES
         shell: bash
 
   #     - name: Set correct branch
