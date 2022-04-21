@@ -3,9 +3,6 @@ name: Continuous Deployment Fauna
 on:
   workflow_call:
     inputs:
-      GITHUB_REPOSITORIES:
-        required: true
-        type: string
       FAUNA_DATABASE:
         required: true
         type: string
@@ -23,15 +20,53 @@ on:
         required: true
 
 jobs:
+  set-correct-envs:
+    runs-on: ubuntu-latest
+
+    outputs:
+      GITHUB_REPOSITORIES: ${{ steps.get_repos.outputs.GITHUB_REPOSITORIES }}
+
+    steps:
+      - name: Install libraries
+        run: |
+          sudo apt-get install curl jq -y
+        shell: bash
+
+      - name: Set correct branch
+        id: set_branch
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            echo "::set-output name=BRANCH_NAME::${{ github.head_ref }}"
+          else
+            echo "::set-output name=BRANCH_NAME::${{ github.ref_name }}"
+          fi
+        shell: bash
+
+      - uses: actions/checkout@v3
+        with:
+          repository: 'Dechea/ORC_Workflows'
+          ref: 'main'
+
+      - name: Get All Repo Names
+        id: get_repos
+        run: |
+          chmod u+x ./scripts/get_all_domains.sh
+          GITHUB_REPOSITORIES=$( ./scripts/get_all_domains.sh ${{ secrets.GITHUB_PAT }} ${{ github.repository }} ${{ steps.set_branch.outputs.BRANCH_NAME }} )
+          echo $GITHUB_REPOSITORIES
+          echo "::set-output name=GITHUB_REPOSITORIES::$GITHUB_REPOSITORIES"
+        shell: bash
+
   build:
     runs-on: ubuntu-latest
+
+    needs: set-correct-envs
 
     steps:
       - uses: actions/checkout@v3
       - name: Fauna Domain IaC
         uses: Dechea/Fauna-Domain-IaC_-Action-@main
         with:
-          GITHUB_REPOSITORIES: ${{ inputs.GITHUB_REPOSITORIES}}
+          GITHUB_REPOSITORIES: ${{ needs.set-correct-envs.outputs.GITHUB_REPOSITORIES }}
           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
           FAUNA_DATABASE: ${{ inputs.FAUNA_DATABASE}}
           FAUNA_REGION: ${{ secrets.FAUNA_REGION }}
