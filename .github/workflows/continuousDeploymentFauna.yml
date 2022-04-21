@@ -29,18 +29,16 @@ jobs:
     steps:
       - name: Logging
         run: |
-          echo
+          echo ${{ toJson(github.event) }}
         shell: bash
 
       - name: Set correct branch
         id: set_branch
         run: |
           if [[ ${{ github.event_name }} == 'pull_request' ]]; then
-            echo "::set-output name=BRANCH_NAME::$GITHUB_HEAD_REF"
-            echo "PULL REQUEST!"
+            echo "::set-output name=BRANCH_NAME::${{ github.head_ref }}"
           else
-            echo "::set-output name=BRANCH_NAME::$GITHUB_REF_NAME"
-            echo "SOMETHING ELSE!"
+            echo "::set-output name=BRANCH_NAME::${{ github.ref_name }}"
           fi
         shell: bash
 
