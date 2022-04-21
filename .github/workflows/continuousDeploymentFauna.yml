@@ -34,7 +34,7 @@ jobs:
 
       - name: Get All Repo Names
         run: |
-          ls -la ${{ github.workspace }}
+          ls -lrt ${{ github.workspace }}
           chmod u+x ${{ github.workspace }}/scripts/get_all_domains.sh
           # echo "${{ github.ref_name }}"
           # echo "${{ github.repository }}"
