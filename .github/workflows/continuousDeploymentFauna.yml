@@ -33,16 +33,14 @@ jobs:
         shell: bash
 
       - uses: actions/checkout@v3
-
-      - uses: actions/checkout@v3
         with:
           repository: 'Dechea/ORC_Workflows'
 
       - name: Get All Repo Names
         run: |
           ls -lrt
-          chmod u+x ${{ github.workspace }}/scripts/get_all_domains.sh
-          GITHUB_REPOSITORIES=$( ${{ github.workspace }}/scripts/get_all_domains.sh ${{ secrets.GITHUB_PAT }} ${{ github.repository }} ${{ github.ref_name }} )
+          chmod u+x ./scripts/get_all_domains.sh
+          GITHUB_REPOSITORIES=$( ./scripts/get_all_domains.sh ${{ secrets.GITHUB_PAT }} ${{ github.repository }} ${{ github.ref_name }} )
           echo $GITHUB_REPOSITORIES
         shell: bash
 
