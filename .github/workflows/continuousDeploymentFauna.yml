@@ -32,6 +32,13 @@ jobs:
           sudo apt-get install curl jq -y
         shell: bash
 
+      - name: Get All Repo Names
+        run: |
+          chmod u+x ${{ github.action_path }}/scripts/get_all_domains.sh
+          echo "${{ github.ref_name }}"
+          echo "${{ github.repository }}"
+        shell: bash
+
   #     - name: Set correct branch
   #       id: set_branch
   #       run: |
