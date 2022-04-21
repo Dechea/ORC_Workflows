@@ -2,7 +2,6 @@
 INPUT_STR=$(curl --header "Authorization: token $1" https://api.github.com/search/repositories?q=Schema+in:name+org:Dechea | jq -r '.items | map(.full_name) | join(",")')
 BRANCH_NAME_OTHERS="main"
 
-echo "$INPUT_STR"
 result2="$2@$3"
 IFS="," read -a repoNames <<< $INPUT_STR
 declare -a ARRAY_NAME=()
