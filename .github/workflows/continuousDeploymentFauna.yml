@@ -4,21 +4,35 @@ on:
   workflow_call:
     inputs:
       FAUNA_DATABASE:
+        description: 'The target database name where you want to apply the migration.'
         required: true
         type: string
       MUTATION_TEST:
+        description: 'Run all unit tests again with stryker.'
         required: false
         type: boolean
     secrets:
       GITHUB_PAT:
+        description: 'Personal access token used to access all *_Schema GitHub repos.
+                      Managed by Doppler'
         required: true
       FAUNA_REGION:
+        description: 'The domain where your databases are hosted. 
+                      Allowed values: us, eu, classic, preview
+                      Managed by Doppler'
         required: true
       FAUNA_TOKEN:
+        description: 'The token used to access your Fauna database defined in FAUNA_DATABASE.
+                      Managed by Doppler'
         required: true
       FAUNA_CHILD_DB:
+        description: 'The token used to access your Fauna database used to run unit and integration tests.
+                      Managed by Doppler [Key: FAUNA_TOKEN_UNIT_INTEGRATION_TESTING]'
         required: true
       SONAR_TOKEN_SCHEMA:
+        description: 'The token used to upload the scan results to Sonarcloud.
+                      Managed by Doppler
+                      DEPRECATED'
         required: true
 
 jobs:
@@ -82,6 +96,7 @@ jobs:
           name: coverage-files
           path: coverage
 
+      # TBD - DEPRECATED - Needs to be removed after finished Bitbucket to GitHub migration
       - uses: sonarsource/sonarcloud-github-action@master
         name: SonarCloud Scan
         env:
