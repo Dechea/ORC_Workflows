@@ -56,7 +56,7 @@ jobs:
       - name: Create or use existing lane for pending components
         if: "contains(inputs.ENVIRONMENT, 'Dev')"
         run: |
-          bit switch ${GITHUB_REF##*/} || bit lane create ${GITHUB_REF##*/}
+          bit switch ${GITHUB_REF##*/,,} || bit lane create ${GITHUB_REF##*/,,}
           bit snap ${{ inputs.COMPONENTS_DIRECTORIES }} -m "add new feature"
           bit export
 
@@ -67,7 +67,7 @@ jobs:
       - name: Hard-tag pending components
         if: "contains(inputs.ENVIRONMENT, 'Prod')"
         run: |
-          bit lane merge ${GITHUB_REF##*/}
+          bit lane merge ${GITHUB_REF##*/,,}
 
       - name: Commit changes made to .bitmap
         uses: EndBug/add-and-commit@v9
