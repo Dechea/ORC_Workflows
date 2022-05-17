@@ -54,11 +54,11 @@ jobs:
 
         ## Do we want to test everytime?
       - name: Link pending components
-        if: "!contains(inputs.GITHUB_REPOSITORIES, 'Dev')"
+        if: "contains(inputs.GITHUB_REPOSITORIES, 'Dev')"
         run: bit test
 
       - name: Hard-tag pending components
-        if: "!contains(inputs.GITHUB_REPOSITORIES, 'Prod')"
+        if: "contains(inputs.GITHUB_REPOSITORIES, 'Prod')"
         run: |
           bit tag --persist
           bit export
