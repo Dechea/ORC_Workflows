@@ -30,48 +30,56 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v3
-      - name: Use Node.js 14
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
+      - run: |
+        echo "BRANCH_NAME=${GITHUB_REF##*/}"
+        echo "BRANCH_NAME=${BRANCH_NAME,,}" >> ${GITHUB_ENV}
 
-      - name: Install Bit Version Manager
-        run: npm i -g @teambit/bvm
-      - name: Install latest Bit version
-        run: bvm install
-      - name: add bvm bin folder to path
-        run: echo "$HOME/bin" >> $GITHUB_PATH
+      -run: echo $BRANCH_NAME
 
-      - name: Set up bit config
-        run: |
-          bit config set analytics_reporting false
-          bit config set anonymous_reporting false
-          bit config set user.token ${{ secrets.BIT_TOKEN }}
-
-      - name: Install packages using bit
-        run: |
-          bit install
-
-      - name: Create or use existing lane for pending components
-        if: "contains(inputs.ENVIRONMENT, 'Dev')"
-        run: |
-          bit switch ${GITHUB_REF##*/,,} || bit lane create ${GITHUB_REF##*/,,}
-          bit snap ${{ inputs.COMPONENTS_DIRECTORIES }} -m "add new feature"
-          bit export
-
-      - name: Test pending components
-        if: "contains(inputs.ENVIRONMENT, 'Dev')"
-        run: bit test -s ${{ inputs.SCOPE_NAME }}
-
-      - name: Hard-tag pending components
-        if: "contains(inputs.ENVIRONMENT, 'Prod')"
-        run: |
-          bit lane merge ${GITHUB_REF##*/,,}
-
-      - name: Commit changes made to .bitmap
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: .bitmap
-          author_name: ${{ github.actor }}
-          message: "update .bitmap with new component versions (automated). --skip-ci"
+#
+#
+#      - uses: actions/checkout@v3
+#      - name: Use Node.js 14
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: 14
+#
+#      - name: Install Bit Version Manager
+#        run: npm i -g @teambit/bvm
+#      - name: Install latest Bit version
+#        run: bvm install
+#      - name: add bvm bin folder to path
+#        run: echo "$HOME/bin" >> $GITHUB_PATH
+#
+#      - name: Set up bit config
+#        run: |
+#          bit config set analytics_reporting false
+#          bit config set anonymous_reporting false
+#          bit config set user.token ${{ secrets.BIT_TOKEN }}
+#
+#      - name: Install packages using bit
+#        run: |
+#          bit install
+#
+#      - name: Create or use existing lane for pending components
+#        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+#        run: |
+#          bit switch ${GITHUB_REF##*/} || bit lane create ${GITHUB_REF##*/}
+#          bit snap ${{ inputs.COMPONENTS_DIRECTORIES }} -m "add new feature"
+#          bit export
+#
+#      - name: Test pending components
+#        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+#        run: bit test -s ${{ inputs.SCOPE_NAME }}
+#
+#      - name: Hard-tag pending components
+#        if: "contains(inputs.ENVIRONMENT, 'Prod')"
+#        run: |
+#          bit lane merge ${GITHUB_REF##*/}
+#
+#      - name: Commit changes made to .bitmap
+#        uses: EndBug/add-and-commit@v9
+#        with:
+#          add: .bitmap
+#          author_name: ${{ github.actor }}
+#          message: "update .bitmap with new component versions (automated). --skip-ci"
