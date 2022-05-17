@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       ENVIRONMENT:
-        description: 'Deployment environment.
+        description: 'The environment where to you want to run this script.
                       Eg. Prod, Dev'
         required: true
         type: string
