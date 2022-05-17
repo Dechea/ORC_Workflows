@@ -64,7 +64,7 @@ jobs:
         if: "contains(inputs.ENVIRONMENT, 'Dev')"
         run: |
           bit switch ${{ steps.line-name.outputs.branch_name }} || bit lane create ${{ steps.line-name.outputs.branch_name }}
-          bit snap ${{ inputs.COMPONENTS_DIRECTORIES }} -m "add new feature"
+          bit snap ${{ inputs.SCOPE_NAME }} -m "add new feature"
           bit export
 
       - name: Test pending components
