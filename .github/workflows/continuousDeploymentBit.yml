@@ -30,11 +30,14 @@ jobs:
 
     steps:
 
-      - run: |
-        echo "BRANCH_NAME=${GITHUB_REF##*/}"
-        echo "BRANCH_NAME=${BRANCH_NAME,,}" >> ${GITHUB_ENV}
+      - name: Create line name for bit
+        run: |
+          echo "BRANCH_NAME=${GITHUB_REF##*/}"
+          echo "BRANCH_NAME=${BRANCH_NAME,,}" >> ${GITHUB_ENV}
 
-      - run: echo $BRANCH_NAME
+      - name: Get line name
+        run: |
+          echo $BRANCH_NAME
 
 #
 #
