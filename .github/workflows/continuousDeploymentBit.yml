@@ -50,6 +50,10 @@ jobs:
           bit compile
           bit link --rewire
 
+      - name: Check who triggered this workflow_call
+        run: |
+          echo "Here is some user: ${{github.actor}}"
+
       - name: Test pending components
         if: "contains(inputs.GITHUB_REPOSITORIES, 'Dev')"
         run: bit test
@@ -64,4 +68,5 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: .bitmap
+          author_name: ${{github.actor}}
           message: "update .bitmap with new component versions (automated). --skip-ci"
