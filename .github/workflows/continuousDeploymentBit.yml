@@ -34,7 +34,7 @@ jobs:
         echo "BRANCH_NAME=${GITHUB_REF##*/}"
         echo "BRANCH_NAME=${BRANCH_NAME,,}" >> ${GITHUB_ENV}
 
-      -run: echo $BRANCH_NAME
+      - run: echo $BRANCH_NAME
 
 #
 #
