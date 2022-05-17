@@ -43,17 +43,14 @@ jobs:
           bit config set anonymous_reporting false
           bit config set user.token ${{ secrets.BIT_TOKEN }}
 
-        ## OLD CODE, why do we need all folders here?
-        ## bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
-      - name: Install packages using bit
+      - name: Install packages, compile and link components using bit
         run: |
           bit install
           bit add ${{ inputs.COMPONENTS_DIRECTORIES }}
           bit compile
           bit link --rewire
 
-        ## Do we want to test everytime?
-      - name: Link pending components
+      - name: Test pending components
         if: "contains(inputs.GITHUB_REPOSITORIES, 'Dev')"
         run: bit test
 
