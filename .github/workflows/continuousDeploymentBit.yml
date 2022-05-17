@@ -31,13 +31,15 @@ jobs:
     steps:
 
       - name: Create line name for bit
+        id: line-name
         run: |
-          echo "BRANCH_NAME=${GITHUB_REF##*/}"
-          echo "BRANCH_NAME=${BRANCH_NAME,,}" >> ${GITHUB_ENV}
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          BRANCH_NAME="${BRANCH_NAME,,}"
+          echo "::set-output name=branch_name::$BRANCH_NAME"
 
       - name: Get line name
         run: |
-          echo $BRANCH_NAME
+          echo "Here's the line name: ${{ steps.line-name.outputs.branch_name }}"
 
 #
 #
