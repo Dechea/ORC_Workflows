@@ -1,0 +1,68 @@
+name: Continuous Deployment bit.dev
+
+on:
+  workflow_call:
+    input:
+      COMPONENTS_DIRECTORIES:
+        description: 'The directories which contains the components.
+                      Eg. /orc/apis/* orc/components/*'
+        required: true
+      ENVIRONMENT:
+        description: 'Deployment environment.
+                      Eg. Prod, Dev'
+        required: true
+    secrets:
+      BIT_TOKEN:
+        description: 'The token used to access your bit.dev environment.
+                      Managed by Doppler'
+        required: true
+
+jobs:
+  tag-and-export:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 14
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Install Bit Version Manager
+        run: npm i -g @teambit/bvm
+      - name: Install latest Bit version
+        run: bvm install
+      - name: add bvm bin folder to path
+        run: echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Set up bit config
+        run: |
+          bit config set analytics_reporting false
+          bit config set anonymous_reporting false
+          bit config set user.token ${{ secrets.BIT_TOKEN }}
+
+        ## OLD CODE, why do we need all folders here?
+        ## bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
+      - name: Install packages using bit
+        run: |
+          bit install
+          bit add ${{ inputs.COMPONENTS_DIRECTORIES }}
+          bit compile
+          bit link --rewire
+
+        ## Do we want to test everytime?
+      - name: Link pending components
+        if: "!contains(inputs.GITHUB_REPOSITORIES, 'Dev')"
+        run: bit test
+
+      - name: Hard-tag pending components
+        if: "!contains(inputs.GITHUB_REPOSITORIES, 'Prod')"
+        run: |
+          bit tag --persist
+          bit export
+
+      - name: Commit changes made to .bitmap
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: .bitmap
+          message: "update .bitmap with new component versions (automated). --skip-ci"
