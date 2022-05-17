@@ -56,7 +56,7 @@ jobs:
       - name: Create or use existing lane for pending components
         if: "contains(inputs.ENVIRONMENT, 'Dev')"
         run: |
-          echo BRANCH_NAME=${{ github.ref }} | sed -e "s/^refs\/heads\/feature\///"
+          echo BRANCH_NAME=${GITHUB_REF##*/}
           bit switch $BRANCH_NAME || bit lane create $BRANCH_NAME
           bit snap ${{ inputs.COMPONENTS_DIRECTORIES }} -m "add new feature"
           bit export
@@ -68,7 +68,7 @@ jobs:
       - name: Hard-tag pending components
         if: "contains(inputs.ENVIRONMENT, 'Prod')"
         run: |
-          echo BRANCH_NAME=${{ github.ref }} | sed -e "s/^refs\/heads\/feature\///"
+          echo BRANCH_NAME=${GITHUB_REF##*/}
           bit lane merge $BRANCH_NAME
 
       - name: Commit changes made to .bitmap
