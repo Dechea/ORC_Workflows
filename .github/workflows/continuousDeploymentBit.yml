@@ -2,15 +2,17 @@ name: Continuous Deployment bit.dev
 
 on:
   workflow_call:
-    input:
+    inputs:
       COMPONENTS_DIRECTORIES:
         description: 'The directories which contains the components.
                       Eg. /orc/apis/* orc/components/*'
         required: true
+        type: string
       ENVIRONMENT:
         description: 'Deployment environment.
                       Eg. Prod, Dev'
         required: true
+        type: string
     secrets:
       BIT_TOKEN:
         description: 'The token used to access your bit.dev environment.
