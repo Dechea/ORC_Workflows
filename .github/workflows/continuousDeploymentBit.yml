@@ -66,7 +66,7 @@ jobs:
       - name: Hard-tag pending components
         if: "contains(inputs.ENVIRONMENT, 'Prod')"
         run: |
-          bit tag --persist
+          bit tag --ignore-issues "CircularDependencies"
           bit export
 
       - name: Commit changes made to .bitmap
