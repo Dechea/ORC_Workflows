@@ -8,6 +8,11 @@ on:
                       Eg. /orc/apis/* orc/components/*'
         required: true
         type: string
+      SCOPE_NAME:
+        description: 'The name of the scope.
+                      Eg. dechea.orc, dechea.hes'
+        required: true
+        type: string
       ENVIRONMENT:
         description: 'The environment where to you want to run this script.
                       Eg. Prod, Dev'
@@ -55,11 +60,11 @@ jobs:
           echo "Here is some user: ${{github.actor}}"
 
       - name: Test pending components
-        if: "contains(inputs.GITHUB_REPOSITORIES, 'Dev')"
-        run: bit test
+        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+        run: bit test -s ${{ inputs.SCOPE_NAME }}
 
       - name: Hard-tag pending components
-        if: "contains(inputs.GITHUB_REPOSITORIES, 'Prod')"
+        if: "contains(inputs.ENVIRONMENT, 'Prod')"
         run: |
           bit tag --persist
           bit export
@@ -68,5 +73,5 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: .bitmap
-          author_name: ${{github.actor}}
+          author_name: ${{ github.actor }}
           message: "update .bitmap with new component versions (automated). --skip-ci"
