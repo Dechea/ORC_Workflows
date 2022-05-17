@@ -30,51 +30,48 @@ jobs:
 
     steps:
 
-      - name: Check who triggered this workflow_call
+      - uses: actions/checkout@v3
+      - name: Use Node.js 14
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Install Bit Version Manager
+        run: npm i -g @teambit/bvm
+      - name: Install latest Bit version
+        run: bvm install
+      - name: add bvm bin folder to path
+        run: echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Set up bit config
         run: |
-          echo "Here is some user: ${{github.actor}}"
-          echo "Here is some user: ${{ github.event.pusher.name }}" 
-          echo "The email of the pusher: ${{ github.event.pusher.email }}"
-#
-#      - uses: actions/checkout@v3
-#      - name: Use Node.js 14
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 14
-#
-#      - name: Install Bit Version Manager
-#        run: npm i -g @teambit/bvm
-#      - name: Install latest Bit version
-#        run: bvm install
-#      - name: add bvm bin folder to path
-#        run: echo "$HOME/bin" >> $GITHUB_PATH
-#
-#      - name: Set up bit config
-#        run: |
-#          bit config set analytics_reporting false
-#          bit config set anonymous_reporting false
-#          bit config set user.token ${{ secrets.BIT_TOKEN }}
-#
-#      - name: Install packages, compile and link components using bit
-#        run: |
-#          bit install
-#          bit add ${{ inputs.COMPONENTS_DIRECTORIES }}
-#          bit compile
-#          bit link --rewire
-#
-#      - name: Test pending components
-#        if: "contains(inputs.ENVIRONMENT, 'Dev')"
-#        run: bit test -s ${{ inputs.SCOPE_NAME }}
-#
-#      - name: Hard-tag pending components
-#        if: "contains(inputs.ENVIRONMENT, 'Prod')"
-#        run: |
-#          bit tag --ignore-issues "CircularDependencies"
-#          bit export
-#
-#      - name: Commit changes made to .bitmap
-#        uses: EndBug/add-and-commit@v9
-#        with:
-#          add: .bitmap
-#          author_name: ${{ github.actor }}
-#          message: "update .bitmap with new component versions (automated). --skip-ci"
+          bit config set analytics_reporting false
+          bit config set anonymous_reporting false
+          bit config set user.token ${{ secrets.BIT_TOKEN }}
+
+      - name: Install packages using bit
+        run: |
+          bit install
+
+      - name: Create or use existing lane for pending components
+        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+        run: |
+          bit switch ${{ github.ref }} || bit lane create ${{ github.ref }}
+          bit snap ${{ inputs.COMPONENTS_DIRECTORIES }} -m "add new feature"
+          bit export
+
+      - name: Test pending components
+        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+        run: bit test -s ${{ inputs.SCOPE_NAME }}
+
+      - name: Hard-tag pending components
+        if: "contains(inputs.ENVIRONMENT, 'Prod')"
+        run: |
+          bit lane merge ${{ github.ref }}
+
+      - name: Commit changes made to .bitmap
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: .bitmap
+          author_name: ${{ github.actor }}
+          message: "update .bitmap with new component versions (automated). --skip-ci"
