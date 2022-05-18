@@ -36,62 +36,52 @@ jobs:
         with:
           node-version: 14
 
-      # - name: Install Bit Version Manager
-      #   run: npm i -g @teambit/bvm
-      # - name: Install latest Bit version
-      #   run: bvm install
-      # - name: add bvm bin folder to path
-      #   run: echo "$HOME/bin" >> $GITHUB_PATH
+      - name: Install Bit Version Manager
+        run: npm i -g @teambit/bvm
+      - name: Install latest Bit version
+        run: bvm install
+      - name: add bvm bin folder to path
+        run: echo "$HOME/bin" >> $GITHUB_PATH
 
-      # - name: Set up bit config
-      #   run: |
-      #     bit config set analytics_reporting false
-      #     bit config set anonymous_reporting false
-      #     bit config set user.token ${{ secrets.BIT_TOKEN }}
+      - name: Set up bit config
+        run: |
+          bit config set analytics_reporting false
+          bit config set anonymous_reporting false
+          bit config set user.token ${{ secrets.BIT_TOKEN }}
 
-      # - name: Install packages using bit
-      #   run: |
-      #     bit install
+      - name: Install packages using bit
+        run: |
+          bit install
 
       - name: Set correct branch
-        id: set_branch
+        id: lane_name
         run: |
           if [[ ${{ github.event_name }} == 'pull_request' ]]; then
             echo "::set-output name=branch_name::${{ github.head_ref }}"
-            echo "Branch name: ${{ github.head_ref }}"
           else
             echo "::set-output name=branch_name::${{ github.ref_name }}"
-            echo "Branch name: ${{ github.ref_name }}"
           fi
         shell: bash
 
-      # - name: Create line name for bit
-      #   id: line-name
-      #   run: |
-      #     BRANCH_NAME="${GITHUB_REF##*/}"
-      #     BRANCH_NAME="${BRANCH_NAME,,}"
-      #     echo "::set-output name=branch_name::$BRANCH_NAME"
-      #     echo "Branch name: $BRANCH_NAME"
+      - name: Create or use existing lane for pending components
+        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+        run: |
+          bit switch ${{ steps.lane_name.outputs.branch_name }} || bit lane create ${{ steps.lane_name.outputs.branch_name }}
+          bit snap ${{ inputs.SCOPE_NAME }} -m "add new feature"
+          bit export
 
-      # - name: Create or use existing lane for pending components
-      #   if: "contains(inputs.ENVIRONMENT, 'Dev')"
-      #   run: |
-      #     bit switch ${{ steps.line-name.outputs.branch_name }} || bit lane create ${{ steps.line-name.outputs.branch_name }}
-      #     bit snap ${{ inputs.SCOPE_NAME }} -m "add new feature"
-      #     bit export
+      - name: Test pending components
+        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+        run: bit test -s ${{ inputs.SCOPE_NAME }}
 
-      # - name: Test pending components
-      #   if: "contains(inputs.ENVIRONMENT, 'Dev')"
-      #   run: bit test -s ${{ inputs.SCOPE_NAME }}
+      - name: Hard-tag pending components
+        if: "contains(inputs.ENVIRONMENT, 'Prod')"
+        run: |
+          bit lane merge ${{ steps.lane_name.outputs.branch_name }}
 
-      # - name: Hard-tag pending components
-      #   if: "contains(inputs.ENVIRONMENT, 'Prod')"
-      #   run: |
-      #     bit lane merge ${{ steps.line-name.outputs.branch_name }}
-
-      # - name: Commit changes made to .bitmap
-      #   uses: EndBug/add-and-commit@v9
-      #   with:
-      #     add: .bitmap
-      #     author_name: ${{ github.actor }}
-      #     message: "update .bitmap with new component versions (automated). --skip-ci"
+      - name: Commit changes made to .bitmap
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: .bitmap
+          author_name: ${{ github.actor }}
+          message: "update .bitmap with new component versions (automated). --skip-ci"
