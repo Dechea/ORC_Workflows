@@ -65,7 +65,7 @@ jobs:
             BRANCH_NAME="${BRANCH_NAME##*/}"
             BRANCH_NAME="${BRANCH_NAME,,}"
           fi
-            echo "::set-output name=branch_name::$BRANCH_NAME"
+          echo "::set-output name=branch_name::$BRANCH_NAME"
         shell: bash
 
       - name: Create or use existing lane for pending components
