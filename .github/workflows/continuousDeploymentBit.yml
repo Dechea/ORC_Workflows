@@ -59,26 +59,27 @@ jobs:
           BRANCH_NAME="${GITHUB_REF##*/}"
           BRANCH_NAME="${BRANCH_NAME,,}"
           echo "::set-output name=branch_name::$BRANCH_NAME"
+          echo "Branch name: $BRANCH_NAME"
 
-      - name: Create or use existing lane for pending components
-        if: "contains(inputs.ENVIRONMENT, 'Dev')"
-        run: |
-          bit switch ${{ steps.line-name.outputs.branch_name }} || bit lane create ${{ steps.line-name.outputs.branch_name }}
-          bit snap ${{ inputs.SCOPE_NAME }} -m "add new feature"
-          bit export
+      # - name: Create or use existing lane for pending components
+      #   if: "contains(inputs.ENVIRONMENT, 'Dev')"
+      #   run: |
+      #     bit switch ${{ steps.line-name.outputs.branch_name }} || bit lane create ${{ steps.line-name.outputs.branch_name }}
+      #     bit snap ${{ inputs.SCOPE_NAME }} -m "add new feature"
+      #     bit export
 
-      - name: Test pending components
-        if: "contains(inputs.ENVIRONMENT, 'Dev')"
-        run: bit test -s ${{ inputs.SCOPE_NAME }}
+      # - name: Test pending components
+      #   if: "contains(inputs.ENVIRONMENT, 'Dev')"
+      #   run: bit test -s ${{ inputs.SCOPE_NAME }}
 
-      - name: Hard-tag pending components
-        if: "contains(inputs.ENVIRONMENT, 'Prod')"
-        run: |
-          bit lane merge ${{ steps.line-name.outputs.branch_name }}
+      # - name: Hard-tag pending components
+      #   if: "contains(inputs.ENVIRONMENT, 'Prod')"
+      #   run: |
+      #     bit lane merge ${{ steps.line-name.outputs.branch_name }}
 
-      - name: Commit changes made to .bitmap
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: .bitmap
-          author_name: ${{ github.actor }}
-          message: "update .bitmap with new component versions (automated). --skip-ci"
+      # - name: Commit changes made to .bitmap
+      #   uses: EndBug/add-and-commit@v9
+      #   with:
+      #     add: .bitmap
+      #     author_name: ${{ github.actor }}
+      #     message: "update .bitmap with new component versions (automated). --skip-ci"
