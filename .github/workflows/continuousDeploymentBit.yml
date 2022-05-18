@@ -30,10 +30,11 @@ jobs:
 
     steps:
 
-      - name: Step that prints name of pull request's base branch
-        if: github.event_name == 'pull_request'
+      - name: Echo out branch values
         run: |
-          echo "Pull request's base branch is: ${{ github.base_ref }}
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.head_ref: ${{ github.head_ref }}
+          echo github.ref: ${{ github.ref }}
 
       - uses: actions/checkout@v3
       - name: Use Node.js 14
@@ -85,8 +86,8 @@ jobs:
       - name: Hard-tag pending components
         if: "contains(inputs.ENVIRONMENT, 'Prod')"
         run: |
-          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all
-          bit lane merge main
+          bit lane merge ${{ steps.lane_name.outputs.branch_name }}
+          bit tag --ignore-issues "CircularDependencies"
 
       - name: Commit changes made to .bitmap
         uses: EndBug/add-and-commit@v9
