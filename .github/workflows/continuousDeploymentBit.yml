@@ -57,9 +57,15 @@ jobs:
         id: lane_name
         run: |
           if [[ ${{ github.event_name }} == 'pull_request' ]]; then
-            echo "::set-output name=branch_name::${{ github.head_ref }}"
+            BRANCH_NAME=${{ github.head_ref }}
+            BRANCH_NAME="${BRANCH_NAME##*/}"
+            BRANCH_NAME="${BRANCH_NAME,,}"
+            echo "::set-output name=branch_name::$BRANCH_NAME"
           else
-            echo "::set-output name=branch_name::${{ github.ref_name }}"
+            BRANCH_NAME=${{ github.ref_name }}
+            BRANCH_NAME="${BRANCH_NAME##*/}"
+            BRANCH_NAME="${BRANCH_NAME,,}"
+            echo "::set-output name=branch_name::$BRANCH_NAME"
           fi
         shell: bash
 
