@@ -58,13 +58,11 @@ jobs:
         run: |
           if [[ ${{ github.event_name }} == 'pull_request' ]]; then
             BRANCH_NAME=${{ github.head_ref }}
-            BRANCH_NAME="${BRANCH_NAME##*/}"
-            BRANCH_NAME="${BRANCH_NAME,,}"
           else
             BRANCH_NAME=${{ github.ref_name }}
-            BRANCH_NAME="${BRANCH_NAME##*/}"
-            BRANCH_NAME="${BRANCH_NAME,,}"
           fi
+          BRANCH_NAME="${BRANCH_NAME##*/}"
+          BRANCH_NAME="${BRANCH_NAME,,}"
           echo "::set-output name=branch_name::$BRANCH_NAME"
         shell: bash
 
