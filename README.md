@@ -50,5 +50,31 @@ jobs:
       SONAR_TOKEN_SCHEMA: ${{ secrets.SONAR_TOKEN_USR_SCHEMA }} #CHANGE THIS VALUE TO YOUR SONAR_TOKEN_xy_SCHEMA (DEPRECATED)
 ```
 
-## Component library - Bit
-TBD
+## Components - Bit
+
+[Link to Workflow](https://github.com/Dechea/ORC_Workflows/blob/main/.github/workflows/continuousDeploymentBit.yml)
+
+Embed the following code and change inside the "Deploy" job the following props based on your Domain:
+<ul>
+  <li>SCOPE_NAME</li>
+</ul>
+
+```yaml
+name: Continuous Deployment
+on:
+  push:
+    branches-ignore:
+        - 'main'
+  pull_request:
+    types:
+      [closed]
+  workflow_dispatch:
+
+jobs:
+  Deploy:
+    uses: Dechea/ORC_Workflows/.github/workflows/continuousDeploymentBit.yml@main
+    with:
+      SCOPE_NAME: 'dechea.orc'
+    secrets:
+      BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
+```
