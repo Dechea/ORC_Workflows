@@ -61,7 +61,7 @@ jobs:
       - name: Create or use existing lane for pending components
         if: github.event_name == 'push' && github.ref_name != 'main'
         run: |
-          bit lane switch ${{ inputs.SCOPE_NAME }}/{{ steps.lane_name.outputs.branch_name }} --get-all || bit lane create {{ steps.lane_name.outputs.branch_name }}
+          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all || bit lane create ${{ steps.lane_name.outputs.branch_name }}
           bit snap -m "add new feature"
           bit export
 
@@ -72,9 +72,9 @@ jobs:
       - name: Hard-tag pending components
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
         run: |
-          bit lane switch ${{ inputs.SCOPE_NAME }}/{{ steps.lane_name.outputs.branch_name }} --get-all
+          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all
           bit lane switch main
-          bit lane merge {{ steps.lane_name.outputs.branch_name }}
+          bit lane merge ${{ steps.lane_name.outputs.branch_name }}
           bit tag --snapped
 
       - name: Commit changes made to .bitmap
