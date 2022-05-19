@@ -16,8 +16,8 @@ on:
 
 jobs:
   deployDev:
-    if: github.event_name == 'push' && github.ref_name != 'main' && "!contains(github.event.head_commit.message, '--skip-ci')"
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_name != 'main' && "!contains(github.event.head_commit.message, '--skip-ci')"
 
     steps:
 
@@ -70,8 +70,8 @@ jobs:
 
 
   deployProd:
-    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
 
     steps:
 
@@ -125,4 +125,4 @@ jobs:
         with:
           add: .bitmap
           author_name: ${{ github.actor }}
-          message: "update .bitmap with new component versions (automated). --skip-ci"
+          message: "update .bitmap with new component versions (automated)."
