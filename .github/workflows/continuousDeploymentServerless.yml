@@ -1,4 +1,4 @@
-name: Continuous Deployment Fauna
+name: Continuous Deployment Serverless
 
 on:
   workflow_call:
@@ -65,7 +65,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  deploy-to-environment:
+  deployEnvironment:
     runs-on: ubuntu-latest
 
     steps:
