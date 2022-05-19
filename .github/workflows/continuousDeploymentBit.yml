@@ -13,11 +13,6 @@ on:
                       Eg. dechea.orc, dechea.hes'
         required: true
         type: string
-      ENVIRONMENT:
-        description: 'The environment where to you want to run this script.
-                      Eg. Prod, Dev'
-        required: true
-        type: string
     secrets:
       BIT_TOKEN:
         description: 'The token used to access your bit.dev environment.
@@ -30,13 +25,9 @@ jobs:
 
     steps:
 
-      - name: Echo out branch values
-        run: |
-          echo github.base_ref: ${{ github.base_ref }}
-          echo github.head_ref: ${{ github.head_ref }}
-          echo github.ref: ${{ github.ref }}
-
-      - uses: actions/checkout@v3
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        
       - name: Use Node.js 14
         uses: actions/setup-node@v3
         with:
@@ -59,35 +50,24 @@ jobs:
         run: |
           bit install
 
-      - name: Set correct branch
-        id: lane_name
-        run: |
-          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
-            BRANCH_NAME=${{ github.head_ref }}
-          else
-            BRANCH_NAME=${{ github.ref_name }}
-          fi
-          BRANCH_NAME="${BRANCH_NAME##*/}"
-          BRANCH_NAME="${BRANCH_NAME,,}"
-          echo "::set-output name=branch_name::$BRANCH_NAME"
-        shell: bash
-
       - name: Create or use existing lane for pending components
-        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+        if: github.event_name == 'push' && github.ref_name != 'main'
         run: |
-          bit switch ${{ steps.lane_name.outputs.branch_name }} || bit lane create ${{ steps.lane_name.outputs.branch_name }}
+          bit switch ${{ github.ref_name }} || bit lane create ${{ github.ref_name }}
           bit snap -m "add new feature"
           bit export
 
       - name: Test pending components
-        if: "contains(inputs.ENVIRONMENT, 'Dev')"
+        if: github.event_name == 'push' && github.ref_name != 'main'
         run: bit test -s ${{ inputs.SCOPE_NAME }}
 
       - name: Hard-tag pending components
-        if: "contains(inputs.ENVIRONMENT, 'Prod')"
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
         run: |
-          bit lane merge ${{ steps.lane_name.outputs.branch_name }}
-          bit tag --ignore-issues "CircularDependencies"
+          bit lane switch scope_name/${{ github.head_ref }} --get-all
+          bit lane switch main
+          bit lane merge ${{ github.head_ref }}
+          bit tag --snapped
 
       - name: Commit changes made to .bitmap
         uses: EndBug/add-and-commit@v9
