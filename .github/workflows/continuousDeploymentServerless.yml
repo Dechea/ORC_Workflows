@@ -1,0 +1,78 @@
+name: Continuous Deployment Fauna
+
+on:
+  workflow_call:
+    inputs:
+      SERVERLESS_INSTANCE:
+        description: 'The target instance name in serverless cloud where you want to deploy.'
+        required: true
+        type: string
+      MUTATION_TEST:
+        description: 'Run all unit tests again with stryker.'
+        required: false
+        type: boolean
+    secrets:
+      SERVERLESS_TOKEN:
+        description: 'The token used to access your serverless instance.
+                      Managed by Doppler'
+        required: true
+      SONAR_TOKEN:
+        description: 'The token used to upload the scan results to Sonarcloud.
+                      Managed by Doppler'
+        required: true
+
+jobs:
+  buildAndTest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        id: cache-node-modules
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: Build and Test App
+        run: |
+          mv .npmrc_config .npmrc
+          npm install -g npm
+          npm install --force
+          npm ci
+          npm run test
+
+      - name: Build and run stryker mutation test
+        if: ${{ inputs.MUTATION_TEST == 'true' }}
+        run: |
+          mv .npmrc_config .npmrc
+          npm install -g npm
+          npm install --force
+          npm run test:mutation
+
+      - uses: sonarsource/sonarcloud-github-action@master
+        name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: SonarQube Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        # Force to fail step after specific time
+        timeout-minutes: 10
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy-to-environment:
+    runs-on: ubuntu-latest
+
+      steps:
+        - name: deploy
+          run: |
+            echo "Deploying to ${{ inputs.SERVERLESS_INSTANCE }}"
+            export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+            mv .npmrc_config .npmrc
+            npm ci
+            npx cloud deploy ${{ inputs.SERVERLESS_INSTANCE }}
