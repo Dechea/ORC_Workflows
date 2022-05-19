@@ -48,7 +48,10 @@ jobs:
       - name: Create or use existing lane for pending components
         if: github.event_name == 'push' && github.ref_name != 'main'
         run: |
-          bit switch ${{ github.ref_name }} || bit lane create ${{ github.ref_name }}
+          BRANCH_NAME=${{ github.ref_name }}
+          BRANCH_NAME="${BRANCH_NAME##*/}"
+          BRANCH_NAME="${BRANCH_NAME,,}"
+          bit switch $BRANCH_NAME || bit lane create $BRANCH_NAME
           bit snap -m "add new feature"
           bit export
 
