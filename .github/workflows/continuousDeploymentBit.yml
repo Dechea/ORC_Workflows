@@ -68,6 +68,7 @@ jobs:
           bit tag --snapped
 
       - name: Commit changes made to .bitmap
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
         uses: EndBug/add-and-commit@v9
         with:
           add: .bitmap
