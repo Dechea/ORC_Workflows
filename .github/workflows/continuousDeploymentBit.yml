@@ -17,7 +17,7 @@ on:
 jobs:
   deployDev:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_name != 'main' && "!contains(github.event.head_commit.message, '--skip-ci')"
+    if: "!contains(github.event.head_commit.message, '--skip-ci') && github.event_name == 'push' && github.ref_name != 'main'"
 
     steps:
 
