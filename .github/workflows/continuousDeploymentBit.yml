@@ -26,7 +26,7 @@ jobs:
       - name: Use Node.js 14
         uses: actions/setup-node@v3
         with:
-          node-version: 14.15.0
+          node-version: 14
 
       - name: Install Bit Version Manager
         run: npm i -g @teambit/bvm
