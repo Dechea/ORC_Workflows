@@ -51,7 +51,7 @@ jobs:
           BRANCH_NAME=${{ github.ref_name }}
           BRANCH_NAME="${BRANCH_NAME##*/}"
           BRANCH_NAME="${BRANCH_NAME,,}"
-          bit switch $BRANCH_NAME || bit lane create $BRANCH_NAME
+          bit lane switch ${{ inputs.SCOPE_NAME }}/$BRANCH_NAME --get-all || bit lane create $BRANCH_NAME
           bit snap -m "add new feature"
           bit export
 
@@ -62,7 +62,7 @@ jobs:
       - name: Hard-tag pending components
         if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
         run: |
-          bit lane switch scope_name/${{ github.head_ref }} --get-all
+          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ github.head_ref }} --get-all
           bit lane switch main
           bit lane merge ${{ github.head_ref }}
           bit tag --snapped
