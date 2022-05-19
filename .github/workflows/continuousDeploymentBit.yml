@@ -15,7 +15,8 @@ on:
         required: true
 
 jobs:
-  tag-and-export:
+  deployDev:
+    if: github.event_name == 'push' && github.ref_name != 'main' && "!contains(github.event.head_commit.message, '--skip-ci')"
     runs-on: ubuntu-latest
 
     steps:
@@ -59,18 +60,60 @@ jobs:
         shell: bash
 
       - name: Create or use existing lane for pending components
-        if: github.event_name == 'push' && github.ref_name != 'main'
         run: |
           bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all || bit lane create ${{ steps.lane_name.outputs.branch_name }}
           bit snap -m "add new feature"
           bit export
 
       - name: Test pending components
-        if: github.event_name == 'push' && github.ref_name != 'main'
         run: bit test -s ${{ inputs.SCOPE_NAME }}
 
+
+  deployProd:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 14
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Install Bit Version Manager
+        run: npm i -g @teambit/bvm
+      - name: Install latest Bit version
+        run: bvm install
+      - name: add bvm bin folder to path
+        run: echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Set up bit config
+        run: |
+          bit config set analytics_reporting false
+          bit config set anonymous_reporting false
+          bit config set user.token ${{ secrets.BIT_TOKEN }}
+
+      - name: Install packages using bit
+        run: |
+          bit install
+
+      - name: Set correct branch
+        id: lane_name
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            BRANCH_NAME=${{ github.head_ref }}
+          else
+            BRANCH_NAME=${{ github.ref_name }}
+          fi
+          BRANCH_NAME="${BRANCH_NAME##*/}"
+          BRANCH_NAME="${BRANCH_NAME,,}"
+          echo "::set-output name=branch_name::$BRANCH_NAME"
+        shell: bash
+
       - name: Hard-tag pending components
-        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
         run: |
           bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all
           bit lane switch main
@@ -78,7 +121,6 @@ jobs:
           bit tag --snapped
 
       - name: Commit changes made to .bitmap
-        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
         uses: EndBug/add-and-commit@v9
         with:
           add: .bitmap
