@@ -62,7 +62,8 @@ jobs:
       - name: Create or use existing lane for pending components
         run: |
           bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all || bit lane create ${{ steps.lane_name.outputs.branch_name }}
-          bit snap -m ${{ github.event.head_commit.message }}
+          echo "${{ github.event.head_commit.message }}"
+          bit snap -m "${{ github.event.head_commit.message }}"
           bit export
 
       - name: Test pending components
