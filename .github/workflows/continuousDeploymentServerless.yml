@@ -29,12 +29,7 @@ jobs:
 
     steps:
       - id: set-matrix
-        run: echo "::set-output name=matrix::[\"dev\", \"dev2\"]"
-
-      - name: logging
-        run: |
-          echo "Input: ${{ inputs.PROD_INSTANCES }}"
-          echo "Input to json: ${{ toJson(inputs.PROD_INSTANCES) }}"
+        run: echo "::set-output name=matrix::${{ toJson(inputs.PROD_INSTANCES) }}"
 
   testMatrix:
     runs-on: ubuntu-latest
