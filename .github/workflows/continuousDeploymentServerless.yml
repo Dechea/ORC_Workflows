@@ -32,6 +32,7 @@ jobs:
       - name: Build and Test App
         run: |
           mv .npmrc_config .npmrc
+          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
           npm install -g npm
           npm install --force
           npm ci
