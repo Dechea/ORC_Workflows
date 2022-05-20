@@ -31,20 +31,6 @@ jobs:
       - id: set-matrix
         run: echo "::set-output name=matrix::${{ toJson(inputs.PROD_INSTANCES) }}"
 
-  testMatrix:
-    runs-on: ubuntu-latest
-    needs: createMatrix
-
-    strategy:
-      matrix:
-        instance: ${{ fromJSON(needs.createMatrix.outputs.matrix) }}
-
-    steps:
-
-      - name: deploy ${{ matrix.instance }}
-        run: |
-          echo "Deploying to ${{ matrix.instance }}"
-
   buildAndTest:
     runs-on: ubuntu-latest
 
