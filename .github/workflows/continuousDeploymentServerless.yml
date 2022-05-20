@@ -3,10 +3,6 @@ name: Continuous Deployment Serverless
 on:
   workflow_call:
     inputs:
-      SERVERLESS_INSTANCE:
-        description: 'The target instance name in serverless cloud where you want to deploy.'
-        required: true
-        type: string
       MUTATION_TEST:
         description: 'Run all unit tests again with stryker.'
         required: false
@@ -14,10 +10,6 @@ on:
     secrets:
       SERVERLESS_TOKEN:
         description: 'The token used to access your serverless instance.
-                      Managed by Doppler'
-        required: true
-      SONAR_TOKEN:
-        description: 'The token used to upload the scan results to Sonarcloud.
                       Managed by Doppler'
         required: true
 
@@ -52,22 +44,14 @@ jobs:
           npm install --force
           npm run test:mutation
 
-      - uses: sonarsource/sonarcloud-github-action@master
-        name: SonarCloud Scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: SonarQube Quality Gate check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        # Force to fail step after specific time
-        timeout-minutes: 10
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  deployEnvironment:
+  deployDev:
     runs-on: ubuntu-latest
     needs: buildAndTest
+    if: github.ref_name != 'main'
+
+    strategy:
+      matrix:
+        instance: [dev, dev-1, dev-2]
 
     steps:
       - name: Checkout source code
@@ -80,10 +64,62 @@ jobs:
           node-version: '16'
           cache: 'npm'
 
-      - name: deploy
+      - name: test
+        run: |
+          echo "Deploying to ${{ matrix.instance }}"
+
+#      - name: deploy
+#        run: |
+#          echo "Deploying to dev"
+#          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+#          mv .npmrc_config .npmrc
+#          npm ci
+#          npx cloud deploy dev
+
+  deployProd:
+    runs-on: ubuntu-latest
+    needs: buildAndTest
+    if: github.base_ref == 'main'
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        id: cache-node-modules
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: deploy prod
+        run: |
+          echo "Deploying to prod"
+          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+          mv .npmrc_config .npmrc
+          npm ci
+          npx cloud deploy prod
+
+      - name: deploy dev-hes
+        run: |
+          echo "Deploying to dev-hes"
+          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+          mv .npmrc_config .npmrc
+          npm ci
+          npx cloud deploy dev-hes
+
+      - name: deploy dev-cls
+        run: |
+          echo "Deploying to dev-cls"
+          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+          mv .npmrc_config .npmrc
+          npm ci
+          npx cloud deploy dev-cls
+
+      - name: deploy dev-orc
         run: |
           echo "Deploying to ${{ inputs.SERVERLESS_INSTANCE }}"
           export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
           mv .npmrc_config .npmrc
           npm ci
-          npx cloud deploy ${{ inputs.SERVERLESS_INSTANCE }}
+          npx cloud deploy dev-orc
