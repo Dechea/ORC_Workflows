@@ -102,4 +102,4 @@ jobs:
           export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
           mv .npmrc_config .npmrc
           npm ci
-          npx cloud deploy ${{ matrix.instance }}
+          npx cloud promote dev ${{ matrix.instance }}
