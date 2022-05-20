@@ -121,9 +121,9 @@ jobs:
 
       - name: Hard-tag pending components
         run: |
-          # bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all
-          # bit lane switch main
-          bit lane merge ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }}
+          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all
+          bit lane switch main
+          bit lane merge ${{ steps.lane_name.outputs.branch_name }}
           bit tag --ignore-issues "CircularDependencies" --snapped
 
       - name: Commit changes made to .bitmap
