@@ -6,6 +6,7 @@ on:
       MUTATION_TEST:
         description: 'Run all unit tests again with stryker.'
         required: false
+        default: false
         type: boolean
     secrets:
       SERVERLESS_TOKEN:
