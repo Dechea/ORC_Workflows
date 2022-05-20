@@ -51,10 +51,6 @@ jobs:
     needs: buildAndTest
     if: github.ref_name != 'main'
 
-    strategy:
-      matrix:
-        instance: [dev, dev-1, dev-2]
-
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
@@ -66,23 +62,23 @@ jobs:
           node-version: '16'
           cache: 'npm'
 
-      - name: test
+      - name: deploy dev
         run: |
-          echo "Deploying to ${{ matrix.instance }}"
-
-#      - name: deploy
-#        run: |
-#          echo "Deploying to dev"
-#          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
-#          mv .npmrc_config .npmrc
-#          npm ci
-#          npx cloud deploy dev
+          echo "Deploying to dev"
+          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+          mv .npmrc_config .npmrc
+          npm ci
+          npx cloud deploy dev
 
   deployProd:
     runs-on: ubuntu-latest
     needs: buildAndTest
     if: github.base_ref == 'main'
 
+    strategy:
+      matrix:
+        instance: [prod, dev-cls, dev-hes, dev-orc]
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
@@ -94,34 +90,10 @@ jobs:
           node-version: '16'
           cache: 'npm'
 
-      - name: deploy prod
+      - name: deploy ${{ matrix.instance }}
         run: |
-          echo "Deploying to prod"
+          echo "Deploying to ${{ matrix.instance }}"
           export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
           mv .npmrc_config .npmrc
           npm ci
-          npx cloud deploy prod
-
-      - name: deploy dev-hes
-        run: |
-          echo "Deploying to dev-hes"
-          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
-          mv .npmrc_config .npmrc
-          npm ci
-          npx cloud deploy dev-hes
-
-      - name: deploy dev-cls
-        run: |
-          echo "Deploying to dev-cls"
-          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
-          mv .npmrc_config .npmrc
-          npm ci
-          npx cloud deploy dev-cls
-
-      - name: deploy dev-orc
-        run: |
-          echo "Deploying to ${{ inputs.SERVERLESS_INSTANCE }}"
-          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
-          mv .npmrc_config .npmrc
-          npm ci
-          npx cloud deploy dev-orc
+          npx cloud deploy ${{ matrix.instance }}
