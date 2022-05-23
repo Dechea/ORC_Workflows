@@ -120,11 +120,11 @@ jobs:
         run: |
           bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all --skip-dependency-installation
           bit lane switch main --skip-dependency-installation
-          bit lane merge ${{ steps.lane_name.outputs.branch_name }}
           bit install
           bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
           bit compile
           bit link --rewire
+          bit lane merge ${{ steps.lane_name.outputs.branch_name }}
           bit tag --ignore-issues "CircularDependencies" --snapped
 
       - name: Commit changes made to .bitmap
