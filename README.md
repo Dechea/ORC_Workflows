@@ -8,7 +8,30 @@ We have different reusable workflows for every repository type, that covers the 
 TBD
 
 ## Functions - Serverless cloud
-TBD
+
+[Link to Workflow](https://github.com/Dechea/ORC_Workflows/blob/main/.github/workflows/continuousDeploymentServerless.yml)
+
+Embed the following code and change inside the "Deploy" job the following props based on your Domain:
+<ul>
+  <li>PROD_INSTANCES</li>
+  <li>MUTATION_TEST</li>
+</ul>
+
+```yaml
+name: Continuous Deployment
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  Deploy:
+    uses: Dechea/ORC_Workflows/.github/workflows/continuousDeploymentServerless.yml@main
+    with:
+      PROD_INSTANCES: "prod"
+      MUTATION_TEST: "false"
+    secrets:
+      SERVERLESS_TOKEN: ${{ secrets.SERVERLESS_TOKEN }}
+      BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
+```
 
 ## IaC - Fauna
 
@@ -73,8 +96,6 @@ on:
 jobs:
   Deploy:
     uses: Dechea/ORC_Workflows/.github/workflows/continuousDeploymentBit.yml@main
-    with:
-      SCOPE_NAME: 'dechea.orc'
     secrets:
       BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
 ```
