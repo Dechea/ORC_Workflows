@@ -41,6 +41,7 @@ jobs:
           cache: 'npm'
 
       - name: init bit.dev
+        if: ${{ secrets.BIT_TOKEN != '' }}
         run: |
           echo "Adding bit.dev to npm registry"
           npm config set @bit:registry https://node.bit.dev
@@ -59,7 +60,6 @@ jobs:
           npm run test
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
-          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
 
       - name: Build and run stryker mutation test
         if: ${{ inputs.MUTATION_TEST == 'true' }}
@@ -74,6 +74,28 @@ jobs:
     if:  "!contains(github.event.head_commit.message, '--skip-ci') && github.event_name == 'push' && github.ref_name != 'main'"
 
     steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        id: cache-node-modules
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: init bit.dev
+        if: ${{ secrets.BIT_TOKEN != '' }}
+        run: |
+          echo "Adding bit.dev to npm registry"
+          npm config set @bit:registry https://node.bit.dev
+          npm config set @dechea:registry=https://node.bit.dev
+          npm config set @teambit:registry=https://node.bit.dev
+          npm config set //node.bit.dev/:_authToken ${BIT_TOKEN}
+          echo "Completed adding bit.dev to npm registry"
+        env:
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
+
       - name: deploy dev
         run: |
           echo "Deploying to dev"
