@@ -19,6 +19,10 @@ on:
         description: 'The token used to access your serverless instance.
                       Managed by Doppler'
         required: true
+      BIT_TOKEN:
+        description: 'The token used to access your bit.dev instance.
+                      Managed by Doppler'
+        required: true
 
 jobs:
   buildAndTest:
