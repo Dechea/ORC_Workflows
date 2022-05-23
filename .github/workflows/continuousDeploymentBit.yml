@@ -41,12 +41,12 @@ jobs:
           bit config set anonymous_reporting false
           bit config set user.token ${{ secrets.BIT_TOKEN }}
 
-      - name: Install packages using bit
-        run: |
-          bit install 
-          bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
-          bit compile
-          bit link --rewire
+      # - name: Install packages using bit
+      #   run: |
+      #     bit install
+      #     bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
+      #     bit compile
+      #     bit link --rewire
 
       - name: Set correct branch
         id: lane_name
@@ -63,7 +63,11 @@ jobs:
 
       - name: Create or use existing lane for pending components
         run: |
-          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all || bit lane create ${{ steps.lane_name.outputs.branch_name }}
+          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all --skip-dependency-installation || bit lane create ${{ steps.lane_name.outputs.branch_name }}
+          bit install 
+          bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
+          bit compile
+          bit link --rewire
           bit snap -m "${{ github.event.head_commit.message }}"
           bit export
 
