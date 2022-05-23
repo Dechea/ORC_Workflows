@@ -38,9 +38,6 @@ jobs:
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
           ls -lA
-          mv .npmrc_config .npmrc
-          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
-          npm ci
           IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
           for index in "${!instances[@]}"
           do
