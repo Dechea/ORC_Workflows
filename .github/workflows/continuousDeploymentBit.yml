@@ -5,13 +5,13 @@ on:
     inputs:
       SCOPE_NAME:
         description: 'The name of the scope.
-                      Eg. dechea.orc, dechea.hes'
+          Eg. dechea.orc, dechea.hes'
         required: true
         type: string
     secrets:
       BIT_TOKEN:
         description: 'The token used to access your bit.dev environment.
-                      Managed by Doppler'
+          Managed by Doppler'
         required: true
 
 jobs:
@@ -20,7 +20,6 @@ jobs:
     if: "!contains(github.event.head_commit.message, '--skip-ci') && github.event_name == 'push' && github.ref_name != 'main'"
 
     steps:
-
       - name: Checkout source code
         uses: actions/checkout@v3
 
@@ -44,7 +43,7 @@ jobs:
 
       - name: Install packages using bit
         run: |
-          bit install
+          bit install --skip-import 
           bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
           bit compile
           bit link --rewire
@@ -71,13 +70,11 @@ jobs:
       - name: Test pending components
         run: bit test
 
-
   deployProd:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'main'
 
     steps:
-
       - name: Checkout source code
         uses: actions/checkout@v3
 
@@ -131,4 +128,4 @@ jobs:
         with:
           add: .bitmap
           author_name: ${{ github.actor }}
-          message: "update .bitmap with new component versions (automated)."
+          message: 'update .bitmap with new component versions (automated).'
