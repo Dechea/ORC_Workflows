@@ -5,8 +5,8 @@ on:
     inputs:
       PROD_INSTANCES:
         description: 'The instances where to deploy the code on prod.
-                      Needs to be a stringified JSON array.
-                      Example: "["prod", "dev-hes"]"'
+                      Needs to be a comma separated list.
+                      Example: prod, dev-hes'
         required: true
         type: string
       MUTATION_TEST:
@@ -21,16 +21,6 @@ on:
         required: true
 
 jobs:
-  createMatrix:
-    runs-on: ubuntu-latest
-
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-
-    steps:
-      - id: set-matrix
-        run: echo "::set-output name=matrix::${{ toJson(inputs.PROD_INSTANCES) }}"
-
   buildAndTest:
     runs-on: ubuntu-latest
 
@@ -88,12 +78,8 @@ jobs:
 
   deployProd:
     runs-on: ubuntu-latest
-    needs: [ buildAndTest, createMatrix ]
+    needs: [ buildAndTest ]
     if: github.ref == 'refs/heads/main'
-
-    strategy:
-      matrix:
-        instance: ${{ fromJSON(needs.createMatrix.outputs.matrix) }}
 
     steps:
       - name: Checkout source code
@@ -106,10 +92,15 @@ jobs:
           node-version: '16'
           cache: 'npm'
 
-      - name: deploy ${{ matrix.instance }}
+      - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
-          echo "Deploying to ${{ matrix.instance }}"
-          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
           mv .npmrc_config .npmrc
+          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
           npm ci
-          npx cloud promote dev ${{ matrix.instance }}
+          IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
+          for index in "${!instances[@]}"
+          do
+            echo "Deploying to ${instances[index]}"
+            npx cloud promote dev ${instances[index]}
+          done
+          echo "Successfully deployed to all instances"
