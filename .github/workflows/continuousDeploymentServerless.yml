@@ -58,40 +58,6 @@ jobs:
     if:  "!contains(github.event.head_commit.message, '--skip-ci') && github.event_name == 'push' && github.ref_name != 'main'"
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        id: cache-node-modules
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          cache: 'npm'
-
-      - name: deploy dev
-        run: |
-          echo "Deploying to dev"
-          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
-          mv .npmrc_config .npmrc
-          npm ci
-          npx cloud deploy dev
-
-  deployProd:
-    runs-on: ubuntu-latest
-    needs: [ buildAndTest ]
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        id: cache-node-modules
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          cache: 'npm'
-
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
           mv .npmrc_config .npmrc
@@ -101,6 +67,52 @@ jobs:
           for index in "${!instances[@]}"
           do
             echo "Deploying to ${instances[index]}"
-            npx cloud promote dev ${instances[index]}
           done
           echo "Successfully deployed to all instances"
+
+#      - name: Checkout source code
+#        uses: actions/checkout@v3
+#
+#      - name: Setup Node.js
+#        id: cache-node-modules
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '16'
+#          cache: 'npm'
+#
+#      - name: deploy dev
+#        run: |
+#          echo "Deploying to dev"
+#          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+#          mv .npmrc_config .npmrc
+#          npm ci
+#          npx cloud deploy dev
+#
+#  deployProd:
+#    runs-on: ubuntu-latest
+#    needs: [ buildAndTest ]
+#    if: github.ref == 'refs/heads/main'
+#
+#    steps:
+#      - name: Checkout source code
+#        uses: actions/checkout@v3
+#
+#      - name: Setup Node.js
+#        id: cache-node-modules
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '16'
+#          cache: 'npm'
+#
+#      - name: deploy to ${{ inputs.PROD_INSTANCES }}
+#        run: |
+#          mv .npmrc_config .npmrc
+#          export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
+#          npm ci
+#          IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
+#          for index in "${!instances[@]}"
+#          do
+#            echo "Deploying to ${instances[index]}"
+#            npx cloud promote dev ${instances[index]}
+#          done
+#          echo "Successfully deployed to all instances"
