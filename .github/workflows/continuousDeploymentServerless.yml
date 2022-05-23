@@ -25,9 +25,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: log
-        run: |
-          ls -lA
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        id: cache-node-modules
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
 
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
@@ -42,15 +48,7 @@ jobs:
           done
           echo "Successfully deployed to all instances"
 
-#      - name: Checkout source code
-#        uses: actions/checkout@v3
-#
-#      - name: Setup Node.js
-#        id: cache-node-modules
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '16'
-#          cache: 'npm'
+
 #
 #      - name: Build and Test App
 #        run: |
