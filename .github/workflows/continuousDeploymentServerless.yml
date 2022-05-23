@@ -25,8 +25,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: log
+        run: |
+          ls -lA
+
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
+          ls -lA
           mv .npmrc_config .npmrc
           export SERVERLESS_ACCESS_KEY=${{ secrets.SERVERLESS_TOKEN }}
           npm ci
