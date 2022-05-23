@@ -126,6 +126,7 @@ jobs:
           bit link --rewire
           bit lane merge ${{ steps.lane_name.outputs.branch_name }}
           bit tag --ignore-issues "CircularDependencies" --snapped
+          bit export
 
       - name: Commit changes made to .bitmap
         uses: EndBug/add-and-commit@v9
