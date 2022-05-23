@@ -41,7 +41,7 @@ jobs:
           cache: 'npm'
 
       - name: init bit.dev
-        if: ${{ secrets.BIT_TOKEN != '' }}
+        if: "${{ secrets.BIT_TOKEN != '' }}"
         run: |
           echo "Adding bit.dev to npm registry"
           npm config set @bit:registry https://node.bit.dev
@@ -85,7 +85,7 @@ jobs:
           cache: 'npm'
 
       - name: init bit.dev
-        if: ${{ secrets.BIT_TOKEN != '' }}
+        if: "${{ secrets.BIT_TOKEN != '' }}"
         run: |
           echo "Adding bit.dev to npm registry"
           npm config set @bit:registry https://node.bit.dev
