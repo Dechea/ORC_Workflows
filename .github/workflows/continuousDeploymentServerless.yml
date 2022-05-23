@@ -54,6 +54,7 @@ jobs:
           npm run test
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
 
       - name: Build and run stryker mutation test
         if: ${{ inputs.MUTATION_TEST == 'true' }}
