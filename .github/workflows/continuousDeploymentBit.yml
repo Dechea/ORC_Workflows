@@ -2,12 +2,6 @@ name: Continuous Deployment bit.dev
 
 on:
   workflow_call:
-    inputs:
-      SCOPE_NAME:
-        description: 'The name of the scope.
-          Eg. dechea.orc, dechea.hes'
-        required: true
-        type: string
     secrets:
       BIT_TOKEN:
         description: 'The token used to access your bit.dev environment.
@@ -63,7 +57,7 @@ jobs:
 
       - name: Create or use existing lane for pending components
         run: |
-          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all --skip-dependency-installation || bit lane create ${{ steps.lane_name.outputs.branch_name }}
+          bit lane switch dechea.orc/${{ steps.lane_name.outputs.branch_name }} --get-all --skip-dependency-installation || bit lane create ${{ steps.lane_name.outputs.branch_name }}
           bit install 
           bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
           bit compile
@@ -122,7 +116,7 @@ jobs:
 
       - name: Hard-tag pending components
         run: |
-          bit lane switch ${{ inputs.SCOPE_NAME }}/${{ steps.lane_name.outputs.branch_name }} --get-all --skip-dependency-installation
+          bit lane switch dechea.orc/${{ steps.lane_name.outputs.branch_name }} --get-all --skip-dependency-installation
           bit lane switch main --skip-dependency-installation
           bit install
           bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/services/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/*
