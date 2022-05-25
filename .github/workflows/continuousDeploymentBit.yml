@@ -64,9 +64,17 @@ jobs:
           bit link --rewire
           bit snap -m "${{ github.event.head_commit.message }}"
           bit export
+          bit lane switch main
 
       - name: Test pending components
         run: bit test
+
+      - name: Commit changes made to .bitmap
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: .bitmap
+          author_name: ${{ github.actor }}
+          message: 'update .bitmap with new component versions (automated).'
 
   deployProd:
     runs-on: ubuntu-latest
