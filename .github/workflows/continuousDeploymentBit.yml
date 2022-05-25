@@ -65,8 +65,8 @@ jobs:
           bit snap -m "${{ github.event.head_commit.message }}"
           bit export
 
-      # - name: Test pending components
-      #   run: bit test
+      - name: Test pending components
+        run: bit test
 
   deployProd:
     runs-on: ubuntu-latest
