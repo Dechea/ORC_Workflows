@@ -23,9 +23,9 @@ jobs:
           node-version: 16
 
       - name: Install Bit Version Manager
-        run: npm i -g @teambit/bvm@0.0.37
+        run: npm i -g @teambit/bvm
       - name: Install latest Bit version
-        run: bvm install 0.0.726
+        run: bvm install
       - name: add bvm bin folder to path
         run: echo "$HOME/bin" >> $GITHUB_PATH
 
