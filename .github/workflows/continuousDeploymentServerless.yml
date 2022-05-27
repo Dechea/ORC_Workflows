@@ -48,6 +48,7 @@ jobs:
           npm config set @dechea:registry=https://node.bit.dev
           npm config set @teambit:registry=https://node.bit.dev
           npm config set //node.bit.dev/:_authToken ${BIT_TOKEN}
+          npm config set //node.bit.cloud/:_authToken ${BIT_TOKEN}
           echo "Completed adding bit.dev to npm registry"
         env:
           BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
@@ -92,6 +93,7 @@ jobs:
           npm config set @dechea:registry=https://node.bit.dev
           npm config set @teambit:registry=https://node.bit.dev
           npm config set //node.bit.dev/:_authToken ${BIT_TOKEN}
+          npm config set //node.bit.cloud/:_authToken ${BIT_TOKEN}
           echo "Completed adding bit.dev to npm registry"
         env:
           BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
@@ -127,6 +129,7 @@ jobs:
           npm config set @dechea:registry=https://node.bit.dev
           npm config set @teambit:registry=https://node.bit.dev
           npm config set //node.bit.dev/:_authToken ${BIT_TOKEN}
+          npm config set //node.bit.cloud/:_authToken ${BIT_TOKEN}
           echo "Completed adding bit.dev to npm registry"
         env:
           BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
