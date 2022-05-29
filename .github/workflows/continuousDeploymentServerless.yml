@@ -67,6 +67,7 @@ jobs:
         run: |
           npm install -g npm
           npm install --force
+          npm ci
           npm run test:mutation
 
   deployDev:
@@ -101,6 +102,8 @@ jobs:
       - name: deploy dev
         run: |
           echo "Deploying to dev"
+          npm install --force
+          npm ci
           npx cloud deploy dev
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
@@ -135,6 +138,8 @@ jobs:
 
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
+          npm install --force
+          npm ci
           IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
           for index in "${!instances[@]}"
           do
