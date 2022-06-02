@@ -11,6 +11,11 @@ on:
         description: 'Run all unit tests again with stryker.'
         required: false
         type: boolean
+      SONAR_ANALYSIS:
+        description: 'Run sonar analysis.'
+        required: false
+        default: true
+        type: boolean
     secrets:
       GITHUB_PAT:
         description: 'Personal access token used to access all *_Schema GitHub repos.
@@ -98,12 +103,14 @@ jobs:
 
       # TBD - DEPRECATED - Needs to be removed after finished Bitbucket to GitHub migration
       - uses: sonarsource/sonarcloud-github-action@master
+        if: ${{ inputs.SONAR_ANALYSIS }}
         name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCHEMA }}
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: SonarQube Quality Gate check
+        if: ${{ inputs.SONAR_ANALYSIS }}
         uses: sonarsource/sonarqube-quality-gate-action@master
         # Force to fail step after specific time
         timeout-minutes: 10
