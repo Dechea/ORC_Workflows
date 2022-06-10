@@ -14,7 +14,7 @@ on:
         required: false
         default: false
         type: boolean
-      FRONTEND:
+      FRONTEND_DEPLOYMENT:
         description: 'Run a frontend deployment'
         default: false
         required: false
