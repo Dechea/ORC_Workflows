@@ -17,7 +17,7 @@ on:
       SONAR_ANALYSIS:
         description: 'Run sonar analysis.'
         required: false
-        default: true
+        default: false
         type: boolean
     secrets:
       SERVERLESS_TOKEN:
@@ -31,7 +31,7 @@ on:
       SONARCLOUD_TOKEN:
         description: 'The token used to upload the scan results to Sonarcloud.
                       Managed by Doppler'
-        required: true
+        required: false
 
 jobs:
   buildAndTest:
