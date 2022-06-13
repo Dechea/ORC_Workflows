@@ -105,6 +105,7 @@ jobs:
         run: |
           echo "Deploying to dev"
           # npm install --legacy-peer-deps
+          npm run pre-install --if-present
           npm ci
           # if [[ ${{ inputs.FRONTEND_DEPLOYMENT }} == 'true' ]]; then
           #   npm run build
@@ -144,6 +145,7 @@ jobs:
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
           # npm install --legacy-peer-deps
+          npm run pre-install --if-present
           npm ci
           IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
           for index in "${!instances[@]}"
