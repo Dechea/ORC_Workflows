@@ -77,14 +77,14 @@ jobs:
           npm run test:mutation
 
       - uses: sonarsource/sonarcloud-github-action@master
-        if: ${{ inputs.SONAR_ANALYSIS == 'true' }}
+        if: ${{ inputs.SONAR_ANALYSIS }}
         name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: SonarQube Quality Gate check
-        if: ${{ inputs.SONAR_ANALYSIS == 'true' }}
+        if: ${{ inputs.SONAR_ANALYSIS }}
         uses: sonarsource/sonarqube-quality-gate-action@master
         # Force to fail step after specific time
         timeout-minutes: 10
