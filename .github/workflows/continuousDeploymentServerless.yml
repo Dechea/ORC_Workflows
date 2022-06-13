@@ -14,11 +14,6 @@ on:
         required: false
         default: false
         type: boolean
-      FRONTEND_DEPLOYMENT:
-        description: 'Run a frontend deployment'
-        default: false
-        required: false
-        type: boolean
     secrets:
       SERVERLESS_TOKEN:
         description: 'The token used to access your serverless instance.
@@ -60,6 +55,7 @@ jobs:
 
       - name: Build and Test App
         run: |
+          npm run pre-install --if-present
           npm ci
           npm run test
         env:
@@ -103,11 +99,8 @@ jobs:
       - name: deploy dev
         run: |
           echo "Deploying to dev"
-          # npm install --legacy-peer-deps
+          npm run pre-install --if-present
           npm ci
-          # if [[ ${{ inputs.FRONTEND_DEPLOYMENT }} == 'true' ]]; then
-          #   npm run build
-          # fi
           npx cloud deploy dev
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
@@ -142,7 +135,7 @@ jobs:
 
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
-          # npm install --legacy-peer-deps
+          npm run pre-install --if-present
           npm ci
           IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
           for index in "${!instances[@]}"
