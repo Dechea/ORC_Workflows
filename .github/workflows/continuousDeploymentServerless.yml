@@ -28,6 +28,10 @@ on:
         description: 'The token used to access your bit.dev instance.
           Managed by Doppler'
         required: false
+      SONARCLOUD_TOKEN:
+        description: 'The token used to upload the scan results to Sonarcloud.
+                      Managed by Doppler'
+        required: true
 
 jobs:
   buildAndTest:
@@ -76,7 +80,7 @@ jobs:
         if: ${{ inputs.SONAR_ANALYSIS }}
         name: SonarCloud Scan
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCHEMA }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: SonarQube Quality Gate check
@@ -85,7 +89,7 @@ jobs:
         # Force to fail step after specific time
         timeout-minutes: 10
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCHEMA }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
 
   deployDev:
     runs-on: ubuntu-latest
