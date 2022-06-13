@@ -60,6 +60,7 @@ jobs:
 
       - name: Build and Test App
         run: |
+          npm run pre-install --if-present
           npm ci
           npm run test
         env:
