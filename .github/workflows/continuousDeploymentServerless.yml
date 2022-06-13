@@ -60,9 +60,8 @@ jobs:
 
       - name: Build and Test App
         run: |
-          # npm install -g npm
-          npm install --legacy-peer-deps
-          # npm ci
+          # npm install --legacy-peer-deps
+          npm ci
           npm run test
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
