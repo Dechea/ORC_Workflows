@@ -68,8 +68,6 @@ jobs:
       - name: Build and run stryker mutation test
         if: ${{ inputs.MUTATION_TEST == 'true' }}
         run: |
-          npm install -g npm
-          npm install --legacy-peer-deps
           npm ci
           npm run test:mutation
 
@@ -105,7 +103,8 @@ jobs:
       - name: deploy dev
         run: |
           echo "Deploying to dev"
-          npm install --legacy-peer-deps
+          # npm install --legacy-peer-deps
+          npm ci
           # if [[ ${{ inputs.FRONTEND_DEPLOYMENT }} == 'true' ]]; then
           #   npm run build
           # fi
@@ -143,7 +142,8 @@ jobs:
 
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
-          npm install --legacy-peer-deps
+          # npm install --legacy-peer-deps
+          npm ci
           IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
           for index in "${!instances[@]}"
           do
