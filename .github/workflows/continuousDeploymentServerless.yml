@@ -126,7 +126,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'npm'
+          # cache: 'npm'
 
       - name: init bit.dev
         if: ${{ env.BIT_TOKEN != '' }}
@@ -143,7 +143,6 @@ jobs:
 
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
-          npm install --legacy-peer-deps
           npm ci
           IFS="," read -a instances <<< ${{ inputs.PROD_INSTANCES }}
           for index in "${!instances[@]}"
