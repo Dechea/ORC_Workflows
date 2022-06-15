@@ -19,6 +19,11 @@ on:
         required: false
         default: false
         type: boolean
+      SONAR_ANALYSIS:
+        description: 'Run sonar analysis.'
+        required: true
+        default: true
+        type: boolean
     secrets:
       SERVERLESS_TOKEN:
         description: 'The token used to access your serverless instance.
@@ -28,6 +33,10 @@ on:
         description: 'The token used to access your bit.dev instance.
           Managed by Doppler'
         required: false
+      SONARCLOUD_TOKEN:
+        description: 'The token used to upload the scan results to Sonarcloud.
+                      Managed by Doppler'
+        required: true
 
 jobs:
   buildAndTest:
@@ -71,6 +80,21 @@ jobs:
         run: |
           npm ci
           npm run test:mutation
+
+      - uses: sonarsource/sonarcloud-github-action@master
+        if: ${{ inputs.SONAR_ANALYSIS }}
+        name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: SonarQube Quality Gate check
+        if: ${{ inputs.SONAR_ANALYSIS }}
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        # Force to fail step after specific time
+        timeout-minutes: 10
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
 
   deployDev:
     runs-on: ubuntu-latest

@@ -13,7 +13,7 @@ on:
         type: boolean
       SONAR_ANALYSIS:
         description: 'Run sonar analysis.'
-        required: false
+        required: true
         default: true
         type: boolean
     secrets:
@@ -101,7 +101,6 @@ jobs:
           name: coverage-files
           path: coverage
 
-      # TBD - DEPRECATED - Needs to be removed after finished Bitbucket to GitHub migration
       - uses: sonarsource/sonarcloud-github-action@master
         if: ${{ inputs.SONAR_ANALYSIS }}
         name: SonarCloud Scan
