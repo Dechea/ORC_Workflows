@@ -162,6 +162,29 @@ jobs:
         env:
           BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
 
+      - name: Build and Test App
+        run: |
+          npm run pre-install --if-present
+          npm ci
+          npm run test
+        env:
+          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
+
+      - uses: sonarsource/sonarcloud-github-action@master
+        if: ${{ inputs.SONAR_ANALYSIS }}
+        name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: SonarQube Quality Gate check
+        if: ${{ inputs.SONAR_ANALYSIS }}
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        # Force to fail step after specific time
+        timeout-minutes: 10
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
           npm run pre-install --if-present
