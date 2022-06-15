@@ -3,6 +3,11 @@ name: Continuous Deployment Serverless
 on:
   workflow_call:
     inputs:
+      DEV_INSTANCE:
+        description: 'The instance where to deploy the code on dev.
+          Example: dev-hes'
+        required: true
+        type: string
       PROD_INSTANCES:
         description: 'The instances where to deploy the code on prod.
           Needs to be a comma separated list.
@@ -96,12 +101,12 @@ jobs:
         env:
           BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
 
-      - name: deploy dev
+      - name: deploy to ${{ inputs.DEV_INSTANCE }}
         run: |
-          echo "Deploying to dev"
+          echo "Deploying to ${{ inputs.DEV_INSTANCE }}"
           npm run pre-install --if-present
           npm ci
-          npx cloud deploy dev
+          npx cloud deploy ${{ inputs.DEV_INSTANCE }}
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
 
