@@ -1,6 +1,5 @@
 #!/bin/bash
-INPUT_STR="HES_Schema,USR_Schema,CLS_Schema,ORC_Schema"
-#INPUT_STR=$(curl --header "Authorization: token $1" https://api.github.com/search/repositories?q=Schema+in:name+org:Dechea | jq -r '.items | map(.full_name) | join(",")')
+INPUT_STR=$(curl --header "Authorization: token $1" https://api.github.com/search/repositories?q=Schema+in:name+org:Dechea | jq -r '.items | map(.full_name) | join(",")')
 BRANCH_NAME_OTHERS="main"
 
 result2="$2@$3"
