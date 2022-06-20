@@ -81,12 +81,28 @@ jobs:
           npm ci
           npm run test:mutation
 
+      - name: Get organization as lowercase
+        id: lowercase_organization
+        uses: ASzc/change-string-case-action@v2
+        with:
+          string: ${{ github.repository_owner }}
+
+      - name: Set the generated Sonar config
+        id: set_sonar_values
+        run: |
+          GITHUB_REPOSITORY=${{ github.repository }}
+          GITHUB_REPOSITORY="${GITHUB_REPOSITORY//'/'/'_'}"
+          echo "::set-output name=sonar_organization::${{ steps.lowercase_organization.outputs.lowercase }}"
+          echo "::set-output name=sonar_project::$GITHUB_REPOSITORY"
+
       - uses: sonarsource/sonarcloud-github-action@master
         if: ${{ inputs.SONAR_ANALYSIS }}
         name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
+          SONAR_ORGANIZATION: ${{ steps.set_sonar_values.outputs.sonar_organization }}
+          SONAR_PROJECT_KEY: ${{ steps.set_sonar_values.outputs.sonar_project }}
 
       - name: SonarQube Quality Gate check
         if: ${{ inputs.SONAR_ANALYSIS }}
@@ -95,6 +111,8 @@ jobs:
         timeout-minutes: 10
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          SONAR_ORGANIZATION: ${{ steps.set_sonar_values.outputs.sonar_organization }}
+          SONAR_PROJECT_KEY: ${{ steps.set_sonar_values.outputs.sonar_project }}
 
   deployDev:
     runs-on: ubuntu-latest
