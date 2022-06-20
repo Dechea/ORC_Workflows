@@ -72,7 +72,7 @@ jobs:
         id: get_repos
         run: |
           chmod u+x ./scripts/get_all_domains.sh
-          GITHUB_REPOSITORIES="Dechea/CLS_Schema@main,Dechea/USR_Schema@main,Dechea/ORC_Schema@main,Dechea/TRP_Schema@main,Dechea/HES_Schema@feature/PDN-2083_activate_sonar_context"
+          GITHUB_REPOSITORIES="Dechea/CLS_Schema@main,Dechea/USR_Schema@main,Dechea/ORC_Schema@main,Dechea/HES_Schema@feature/PDN-2083_activate_sonar_context"
           echo $GITHUB_REPOSITORIES
           echo "::set-output name=GITHUB_REPOSITORIES::$GITHUB_REPOSITORIES"
         shell: bash
