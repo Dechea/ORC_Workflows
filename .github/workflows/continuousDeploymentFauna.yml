@@ -66,13 +66,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: 'Dechea/ORC_Workflows'
-          ref: 'main'
+          ref: 'feature/test_sonar'
 
       - name: Get All Repo Names
         id: get_repos
         run: |
           chmod u+x ./scripts/get_all_domains.sh
-          GITHUB_REPOSITORIES=$( ./scripts/get_all_domains.sh ${{ secrets.GITHUB_PAT }} ${{ github.repository }} ${{ steps.set_branch.outputs.BRANCH_NAME }} )
+          GITHUB_REPOSITORIES="Dechea/CLS_Schema@main,Dechea/USR_Schema@main,Dechea/ORC_Schema@main,Dechea/HES_Schema@feature/PDN-2083_activate_sonar_context"
           echo $GITHUB_REPOSITORIES
           echo "::set-output name=GITHUB_REPOSITORIES::$GITHUB_REPOSITORIES"
         shell: bash
@@ -101,12 +101,26 @@ jobs:
           name: coverage-files
           path: coverage
 
+      - id: lowercase_organization
+        uses: ASzc/change-string-case-action@v2
+        with:
+          string: ${{ github.repository_owner }}
+
+      - id: set_sonar_values
+        run: |
+          GITHUB_REPOSITORY=${{ github.repository }}
+          GITHUB_REPOSITORY="${GITHUB_REPOSITORY//'/'/'_'}"
+          echo "::set-output name=sonar_organization::${{ steps.lowercase_organization.outputs.lowercase }}"
+          echo "::set-output name=sonar_project::$GITHUB_REPOSITORY"
+
       - uses: sonarsource/sonarcloud-github-action@master
         if: ${{ inputs.SONAR_ANALYSIS }}
         name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCHEMA }}
           GITHUB_TOKEN: ${{ github.token }}
+          SONAR_ORGANIZATION: ${{ steps.set_sonar_values.outputs.sonar_organization }}
+          SONAR_PROJECT_KEY: ${{ steps.set_sonar_values.outputs.sonar_project }}
 
       - name: SonarQube Quality Gate check
         if: ${{ inputs.SONAR_ANALYSIS }}
@@ -115,3 +129,5 @@ jobs:
         timeout-minutes: 10
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCHEMA }}
+          SONAR_ORGANIZATION: ${{ steps.set_sonar_values.outputs.sonar_organization }}
+          SONAR_PROJECT_KEY: ${{ steps.set_sonar_values.outputs.sonar_project }}
