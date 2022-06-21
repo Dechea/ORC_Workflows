@@ -66,13 +66,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: 'Dechea/ORC_Workflows'
-          ref: 'feature/test_sonar'
+          ref: 'main'
 
       - name: Get All Repo Names
         id: get_repos
         run: |
           chmod u+x ./scripts/get_all_domains.sh
-          GITHUB_REPOSITORIES="Dechea/CLS_Schema@main,Dechea/USR_Schema@main,Dechea/ORC_Schema@main,Dechea/HES_Schema@feature/PDN-2083_activate_sonar_context"
+          GITHUB_REPOSITORIES=$( ./scripts/get_all_domains.sh ${{ secrets.GITHUB_PAT }} ${{ github.repository }} ${{ steps.set_branch.outputs.BRANCH_NAME }} )
           echo $GITHUB_REPOSITORIES
           echo "::set-output name=GITHUB_REPOSITORIES::$GITHUB_REPOSITORIES"
         shell: bash
