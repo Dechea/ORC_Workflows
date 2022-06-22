@@ -57,7 +57,7 @@ jobs:
 
       - name: Create or use existing lane for pending components
         run: |
-          bit import -v --all-history false
+          bit import --skip-dependency-installation
           bit lane switch dechea.orc/${{ steps.lane_name.outputs.branch_name }} --get-all --skip-dependency-installation || bit lane create ${{ steps.lane_name.outputs.branch_name }}
           bit install 
           bit add orc/apis/* orc/constants/* orc/design-tokens/* orc/functions/* orc/hooks/* orc/services/* orc/services/auth/* orc/test-data/* orc/ui/foundations/* orc/ui/compositions/* orc/* hes/apis/* hes/apps/* hes/bar/* hes/functions/* hes/hooks/* hes/test-data/* hes/ui/compositions/* hes/ui/foundations/* hes/*
