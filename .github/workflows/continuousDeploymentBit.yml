@@ -64,7 +64,7 @@ jobs:
           bit compile
           bit link --rewire
           bit snap -m "${{ github.event.head_commit.message }}"
-          bit export --force
+          bit export
 
       - name: Test pending components
         run: |
