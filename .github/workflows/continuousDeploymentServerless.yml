@@ -188,7 +188,7 @@ jobs:
           for index in "${!instances[@]}"
           do
             echo "Deploying to ${instances[index]}"
-            npx cloud promote dev ${instances[index]}
+            npx cloud promote ${{ inputs.DEV_INSTANCE }} ${instances[index]}
           done
           echo "Successfully deployed to all instances"
         env:
