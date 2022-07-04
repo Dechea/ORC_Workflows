@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: 'Dechea/ORC_Workflows'
-          ref: 'main'
+          ref: 'feature/run-db-script-trp'
 
       - name: Get All Repo Names
         id: get_repos
@@ -85,7 +85,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Fauna Domain IaC
-        uses: Dechea/Fauna-Domain-IaC_-Action-@main
+        uses: Dechea/Fauna-Domain-IaC_-Action-@feature/run-db-script-trp
         with:
           GITHUB_REPOSITORIES: ${{ needs.set-correct-envs.outputs.GITHUB_REPOSITORIES }}
           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
