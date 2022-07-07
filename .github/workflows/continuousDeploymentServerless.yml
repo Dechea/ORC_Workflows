@@ -77,7 +77,7 @@ jobs:
       - name: eslint check
         run: |
           npm ci
-          npm run lint:fix --if-present
+          npm run lint:validate --if-present
 
       - name: Build and run stryker mutation test
         if: ${{ inputs.MUTATION_TEST == 'true' }}
