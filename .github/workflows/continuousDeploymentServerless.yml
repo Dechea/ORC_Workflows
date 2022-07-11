@@ -74,6 +74,11 @@ jobs:
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
 
+      - name: Check and validate eslint
+        run: |
+          npm ci
+          npm run lint:validate --if-present
+
       - name: Build and run stryker mutation test
         if: ${{ inputs.MUTATION_TEST == 'true' }}
         run: |
