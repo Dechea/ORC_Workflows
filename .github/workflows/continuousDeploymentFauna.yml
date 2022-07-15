@@ -34,6 +34,10 @@ on:
         description: 'The token used to access your Fauna database used to run unit and integration tests.
                       Managed by Doppler [Key: FAUNA_TOKEN_UNIT_INTEGRATION_TESTING]'
         required: true
+      BIT_TOKEN:
+        description: 'The token used to access your bit.dev instance.
+          Managed by Doppler'
+        required: false
       SONAR_TOKEN_SCHEMA:
         description: 'The token used to upload the scan results to Sonarcloud.
                       Managed by Doppler
@@ -85,7 +89,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Fauna Domain IaC
-        uses: Dechea/Fauna-Domain-IaC_-Action-@main
+        uses: Dechea/Fauna-Domain-IaC_-Action-@feature/PDN-2108_plan_tab
         with:
           GITHUB_REPOSITORIES: ${{ needs.set-correct-envs.outputs.GITHUB_REPOSITORIES }}
           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
@@ -93,6 +97,7 @@ jobs:
           FAUNA_REGION: ${{ secrets.FAUNA_REGION }}
           FAUNA_TOKEN: ${{ secrets.FAUNA_TOKEN }}
           FAUNA_CHILD_DB: ${{ secrets.FAUNA_CHILD_DB }}
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
           MUTATION_TEST: ${{ inputs.MUTATION_TEST }}
 
       - uses: actions/download-artifact@v3
