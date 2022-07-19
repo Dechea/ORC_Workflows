@@ -53,25 +53,13 @@ jobs:
           node-version: '14'
           # cache: 'npm'
 
-      - name: init bit.dev
-        if: ${{ env.BIT_TOKEN != '' }}
-        run: |
-          echo "Adding bit.dev to npm registry"
-          npm config set @bit:registry https://node.bit.dev
-          npm config set @dechea:registry=https://node.bit.dev
-          npm config set @teambit:registry=https://node.bit.dev
-          npm config set //node.bit.dev/:_authToken ${BIT_TOKEN}
-          npm config set //node.bit.cloud/:_authToken ${BIT_TOKEN}
-          echo "Completed adding bit.dev to npm registry"
-        env:
-          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
-
       - name: Build and Test App
         run: |
           npm run pre-install --if-present
           npm ci
           npm run test
         env:
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
 
       - name: Check and validate eslint
@@ -134,19 +122,6 @@ jobs:
           node-version: '14'
           # cache: 'npm'
 
-      - name: init bit.dev
-        if: ${{ env.BIT_TOKEN != '' }}
-        run: |
-          echo "Adding bit.dev to npm registry"
-          npm config set @bit:registry https://node.bit.dev
-          npm config set @dechea:registry=https://node.bit.dev
-          npm config set @teambit:registry=https://node.bit.dev
-          npm config set //node.bit.dev/:_authToken ${BIT_TOKEN}
-          npm config set //node.bit.cloud/:_authToken ${BIT_TOKEN}
-          echo "Completed adding bit.dev to npm registry"
-        env:
-          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
-
       - name: deploy to ${{ inputs.DEV_INSTANCE }}
         run: |
           echo "Deploying to ${{ inputs.DEV_INSTANCE }}"
@@ -154,6 +129,7 @@ jobs:
           npm ci
           npx cloud deploy ${{ inputs.DEV_INSTANCE }}
         env:
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
 
   deployProd:
@@ -172,19 +148,6 @@ jobs:
           node-version: '14'
           # cache: 'npm'
 
-      - name: init bit.dev
-        if: ${{ env.BIT_TOKEN != '' }}
-        run: |
-          echo "Adding bit.dev to npm registry"
-          npm config set @bit:registry https://node.bit.dev
-          npm config set @dechea:registry=https://node.bit.dev
-          npm config set @teambit:registry=https://node.bit.dev
-          npm config set //node.bit.dev/:_authToken ${BIT_TOKEN}
-          npm config set //node.bit.cloud/:_authToken ${BIT_TOKEN}
-          echo "Completed adding bit.dev to npm registry"
-        env:
-          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
-
       - name: deploy to ${{ inputs.PROD_INSTANCES }}
         run: |
           npm run pre-install --if-present
@@ -197,4 +160,5 @@ jobs:
           done
           echo "Successfully deployed to all instances"
         env:
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_TOKEN }}
