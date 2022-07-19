@@ -66,12 +66,16 @@ jobs:
         run: |
           npm ci
           npm run lint:validate --if-present
+        env:
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
 
       - name: Build and run stryker mutation test
         if: ${{ inputs.MUTATION_TEST == 'true' }}
         run: |
           npm ci
           npm run test:mutation
+        env:
+          BIT_TOKEN: ${{ secrets.BIT_TOKEN }}
 
       - name: Get organization as lowercase
         id: lowercase_organization
