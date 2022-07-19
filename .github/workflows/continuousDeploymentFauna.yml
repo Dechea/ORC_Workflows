@@ -89,7 +89,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Fauna Domain IaC
-        uses: Dechea/Fauna-Domain-IaC_-Action-@main
+        uses: Dechea/Fauna-Domain-IaC_-Action-@feature/improve_bit_config
         with:
           GITHUB_REPOSITORIES: ${{ needs.set-correct-envs.outputs.GITHUB_REPOSITORIES }}
           GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
