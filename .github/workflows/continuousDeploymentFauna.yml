@@ -108,7 +108,7 @@ jobs:
           path: coverage
 
       - id: lowercase_organization
-        uses: ASzc/change-string-case-action@v2
+        uses: ASzc/change-string-case-action@v5
         with:
           string: ${{ github.repository_owner }}
 
